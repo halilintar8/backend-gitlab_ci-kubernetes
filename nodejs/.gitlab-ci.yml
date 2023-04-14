@@ -1,0 +1,45 @@
+stages:
+  - build
+  - test
+  - build_image
+  - push_image
+  - deploy
+
+variables:
+  IMAGE_TAG: latest
+  # DOCKER_REGISTRY: registry.example.com
+  # DOCKER_REGISTRY: https://index.docker.io/v1/
+  DOCKER_REGISTRY: registry-1.docker.io
+
+build:
+  stage: build
+  script:
+    - echo "Building services"
+
+test:
+  stage: test
+  script:
+    - echo "Testing services"
+
+build_image:
+  stage: build_image
+  script:
+    # - docker build -t $DOCKER_REGISTRY/your-image-name:$IMAGE_TAG .
+    - docker build -t mynode-app .
+
+push_image:
+  stage: push_image
+  script:
+    - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD $DOCKER_REGISTRY
+    # - docker push $DOCKER_REGISTRY/your-image-name:$IMAGE_TAG    
+    - docker push $DOCKER_REGISTRY/matharoo89/mynode-app:$IMAGE_TAG
+
+deploy:
+  stage: deploy
+  script:
+    # - kubectl apply -f your-kubernetes-manifest.yaml
+    - kubectl apply -f mynode-deployment.yaml
+    - kubectl apply -f mynode-service.yaml
+    - kubectl apply -f mynode-ingress.yaml
+
+
